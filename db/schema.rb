@@ -15,9 +15,11 @@ ActiveRecord::Schema.define(version: 2020_11_14_030522) do
   create_table "messages", force: :cascade do |t|
     t.integer "sender_id", null: false
     t.integer "recipient_id", null: false
-    t.string "body", null: false
+    t.text "body", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["recipient_id"], name: "index_messages_on_recipient_id"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -26,4 +28,6 @@ ActiveRecord::Schema.define(version: 2020_11_14_030522) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "messages", "users", column: "recipient_id"
+  add_foreign_key "messages", "users", column: "sender_id"
 end
