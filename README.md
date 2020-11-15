@@ -35,6 +35,7 @@ We want to see the messages sent for the given recipient and sender. Make a GET 
 Also, note that our sender Cady is seeded in the database and her user_id is 11. This will return all of the most recent messages for the given sender and recipient. Although the automated tests cover this, try creating a message that is older than one month old to see that it is not included. 
 
 ## Future Considerations:
+* In reviewing the prompt, I realize it is 100 messages OR within 30 days. I added a scope for both, instead of one or the other.
 * Better error handling: The error handling in this application is very basic. I would want to make this more bullet proof and add more edge cases to the feature specs. It also does not distinguish from whether the recipient or sender id is invalid when creating a message.
 * Refactoring: Look at moving the logic out of the controller and into a service or something else. There is also mild duplication in the messages_controller. Routing is handrolled in parts and could be improved. 
 * Database: I am still using the built in SQLite database which would not work in production. I would replace with Postgresql. 
