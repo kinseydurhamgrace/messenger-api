@@ -16,6 +16,12 @@ class MessagesController < ApplicationController
     render json: messages, status: :ok
   end
 
+  def most_recent
+    messages = Message.most_recent.where(recipient_id: recipient_id)
+
+    render json: messages, status: :ok
+  end
+
   private
 
   def recipient_id

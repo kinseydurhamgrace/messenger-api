@@ -31,12 +31,6 @@ RSpec.describe 'Messages', type: :request do
     let(:sender_id) { User.create.id }
     let(:other_sender_id) { User.create.id }
     let(:recipient_id) { User.create.id }
-    let(:params) do
-      {
-          sender_id: sender_id,
-          recipient_id: recipient_id,
-      }
-    end
     let!(:message_1) { Message.create!(sender_id: sender_id, recipient_id: recipient_id, body: 'Hi!') }
     let!(:message_2) { Message.create!(sender_id: other_sender_id, recipient_id: recipient_id, body: 'Should not show up.') }
 
@@ -57,6 +51,38 @@ RSpec.describe 'Messages', type: :request do
 
     context 'when there are no recent messages' do
       let!(:message_1) { Message.create!(sender_id: sender_id, recipient_id: recipient_id, body: 'Hi!', created_at: 3.months.ago) }
+
+      it 'does not show the old messages' do
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response.length).to eq 0
+      end
+    end
+  end
+
+  describe 'retrieving recent messages from any sender' do
+    let(:sender_id) { User.create.id }
+    let(:sender_id_2) { User.create.id }
+    let(:recipient_id) { User.create.id }
+    let!(:message_1) { Message.create!(sender_id: sender_id, recipient_id: recipient_id, body: 'Hi!') }
+    let!(:message_2) { Message.create!(sender_id: sender_id_2, recipient_id: recipient_id, body: "On Wednesday's we wear pink.") }
+
+    before do
+      get "/messages/#{recipient_id}/recent"
+    end
+
+    it 'retrieves the correct messages' do
+      parsed_response = JSON.parse(response.body)
+      expect(parsed_response.length).to eq 2
+      expect(parsed_response.first['body']).to eq "On Wednesday's we wear pink."
+      expect(parsed_response.last['body']).to eq 'Hi!'
+    end
+
+    context 'when the specific sender does not exist' do
+    end
+
+    context 'when there are no recent messages' do
+      let!(:message_1) { Message.create!(sender_id: sender_id, recipient_id: recipient_id, body: 'Hi!', created_at: 3.months.ago) }
+      let!(:message_2) { Message.create!(sender_id: sender_id_2, recipient_id: recipient_id, body: "On Wednesday's we wear pink.", created_at: 2.months.ago) }
 
       it 'does not show the old messages' do
         parsed_response = JSON.parse(response.body)
