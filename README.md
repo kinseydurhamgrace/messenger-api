@@ -42,3 +42,4 @@ Also, note that our sender Cady is seeded in the database and her user_id is 11.
 * Authentication: This would 100% be necessary in production. 
 * Security Concerns: Ensure ways to prevent SQL injection and other security concerns. 
 * Adding more fun features and spending more time on this!
+* Better validations: Currently, there are holes in the validations. The message length is not validated and it should be. 
