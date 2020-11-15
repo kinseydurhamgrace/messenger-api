@@ -1,4 +1,6 @@
 class MessagesController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :render_404
+
   def create
     message = Message.create({
               sender_id: sender_id,
@@ -32,7 +34,7 @@ class MessagesController < ApplicationController
     @sender_id ||= User.find(params['sender_id']).id
   end
 
-  def message_params
-    params.require(:message).permit(:sender_id, :recipient_id, :body)
+  def render_404
+    render json: { error: 'The recipient or sender was not found. Please try again.' }, status: :not_found
   end
 end

@@ -4,7 +4,6 @@ class Message < ApplicationRecord
 
   validates :sender, presence: true
   validates :recipient, presence: true
-  validates :body, presence: true
 
   scope :most_recent, -> {
     where('messages.created_at > ?', 1.month.ago)

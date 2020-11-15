@@ -7,9 +7,9 @@ RSpec.describe 'Messages', type: :request do
     let(:body) { 'Four for you Glen Coco. You go Glen Coco!'}
     let(:params) do
       {
-          sender_id: sender_id,
-          recipient_id: recipient_id,
-          message_body: body
+        sender_id: sender_id,
+        recipient_id: recipient_id,
+        message_body: body
       }
     end
 
@@ -24,6 +24,36 @@ RSpec.describe 'Messages', type: :request do
 
     it 'returns status code 201' do
       expect(response).to have_http_status(201)
+    end
+
+    context 'when recipient is not found' do
+      it 'returns an appropriate error message' do
+        params = {
+          sender_id: sender_id,
+          recipient_id: 123456,
+          message_body: body
+        }
+        post '/messages', params: params
+
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['error']).to eq 'The recipient or sender was not found. Please try again.'
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    context 'when sender is not found' do
+      it 'returns an appropriate error message' do
+        params = {
+            sender_id: 505249,
+            recipient_id: recipient_id,
+            message_body: body
+        }
+        post '/messages', params: params
+
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response['error']).to eq 'The recipient or sender was not found. Please try again.'
+        expect(response).to have_http_status(404)
+      end
     end
   end
 
@@ -44,9 +74,6 @@ RSpec.describe 'Messages', type: :request do
       expect(parsed_response.first['body']).to eq 'Hi!'
       expect(parsed_response.first['recipient_id']).to eq recipient_id
       expect(parsed_response.first['sender_id']).to eq sender_id
-    end
-
-    context 'when the specific sender does not exist' do
     end
 
     context 'when there are no recent messages' do
@@ -75,9 +102,6 @@ RSpec.describe 'Messages', type: :request do
       expect(parsed_response.length).to eq 2
       expect(parsed_response.first['body']).to eq "On Wednesday's we wear pink."
       expect(parsed_response.last['body']).to eq 'Hi!'
-    end
-
-    context 'when the specific sender does not exist' do
     end
 
     context 'when there are no recent messages' do
