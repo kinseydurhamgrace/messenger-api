@@ -113,5 +113,17 @@ RSpec.describe 'Messages', type: :request do
         expect(parsed_response.length).to eq 0
       end
     end
+
+    context 'when there are more than 100 most_recent messages' do
+      it 'only shows 100 messages' do
+        101.times do
+          Message.create!(sender_id: sender_id, recipient_id: recipient_id, body: 'Hi!')
+        end
+        get "/messages/#{recipient_id}/recent"
+
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response.length).to eq 100
+      end
+    end
   end
 end
